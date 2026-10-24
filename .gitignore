@@ -1,0 +1,36 @@
+# Skompilowane pliki binarne
+*.exe
+*.out
+*.app
+*.o
+*.obj
+*.so
+*.dll
+
+# Artefakty CMake i środowisk budowania (bardzo ważne!)
+build/
+bin/
+out/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Pliki wynikowe generowane przez silnik (obrazy)
+*.ppm
+*.png
+*.jpg
+*.jpeg
+
+# Środowiska programistyczne IDE
+.vscode/
+.idea/
+*.suo
+*.user
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+# Pliki systemowe
+.DS_Store
+Thumbs.db
