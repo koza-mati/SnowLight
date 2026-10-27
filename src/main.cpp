@@ -55,41 +55,52 @@ int main() {
     // Flaga optymalizacyjna: określa, czy stan sceny się zmienił i wymaga kosztownego ponownego przeliczenia promieni
     bool needs_redraw = true; 
 
-    // Pętla zdarzeń: działa dopóki okno programu nie zostanie zamknięte
     while (window.isOpen()) {
-
-        // Obsługa komunikatów systemowych (zamknięcie okna, wciśnięcie klawisza) przy użyciu std::optional z SFML 3
+        // 1. Pętla zdarzeń systemowych (tylko zdarzenia jednorazowe, np. kliknięcie 'X')
         while (const std::optional<sf::Event> event = window.pollEvent()) {
-            // Reakcja na kliknięcie "X" na pasku okna
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
-            
-            // Rejestrowanie wciśnięcia klawiszy WASD do poruszania kamerą w przestrzeni
-            if (const auto* keyPress = event->getIf<sf::Event::KeyPressed>()) {
-                double speed = 0.2; // Stała prędkość ruchu kamery
-                if (keyPress->code == sf::Keyboard::Key::W) { cam.move(Vec3(0, 0, -speed)); needs_redraw = true; }
-                if (keyPress->code == sf::Keyboard::Key::S) { cam.move(Vec3(0, 0, speed)); needs_redraw = true; }
-                if (keyPress->code == sf::Keyboard::Key::A) { cam.move(Vec3(-speed, 0, 0)); needs_redraw = true; }
-                if (keyPress->code == sf::Keyboard::Key::D) { cam.move(Vec3(speed, 0, 0)); needs_redraw = true; }
-            }
         }
 
-        // Pętla raytracingu uruchamia się tylko, gdy zmieniono pozycję kamery (flaga needs_redraw == true)
+        // 2. Odczyt stanu klawiatury w czasie rzeczywistym (poza pętlą zdarzeń).
+        // Umożliwia to płynny i ciągły ruch kamery (odczyt co klatkę), w przeciwieństwie do przerywanych zdarzeń (pollEvent).
+        double speed = 0.2; // Stała prędkość obrotu/przybliżania
+        double delta_h = 0.0; // Zmiana kąta w poziomie (azymut)
+        double delta_v = 0.0; // Zmiana kąta w pionie (elewacja)
+        double delta_z = 0.0; // Zmiana promienia (zoom)
+
+        // Sumowanie wektorów ruchu, pozwala na poruszanie się po skosie, gdy wciśnięto dwa klawisze
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) delta_v += speed;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) delta_v -= speed;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) delta_h -= speed;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) delta_h += speed;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) delta_z += speed;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) delta_z -= speed;
+
+        // Jeśli zarejestrowano ruch orbitalny (zmianę kątów), wywołaj metodę i wymuś przeliczenie
+        if (delta_h != 0.0 || delta_v != 0.0) {
+            cam.orbit(delta_h, delta_v);
+            needs_redraw = true;
+        }
+        // Jeśli zarejestrowano chęć przybliżenia/oddalenia, wywołaj zoom i wymuś przeliczenie
+        if (delta_z != 0.0) {
+            cam.zoom(delta_z);
+            needs_redraw = true;
+        }
+
+        // 3. Przeliczanie nowej klatki (tylko gdy pozycja uległa zmianie)
         if (needs_redraw) {
             std::cerr << "\rRendering new frame..." << std::flush;
             for (unsigned int j = 0; j < image_height; ++j) {
                 for (unsigned int i = 0; i < image_width; ++i) {
-                    
-                    // Normalizacja współrzędnych ekranu do zakresu 0.0 - 1.0
                     double u = double(i) / (image_width - 1);
-                    // Odwrócenie osi Y dla prawidłowego rzutowania matematycznego w raytracingu względem układu SFML
+                    // Odwrócona oś Y względem przestrzeni obrazu SFML
                     double v = double(image_height - 1 - j) / (image_height - 1);
-                    
                     Ray r = cam.get_ray(u, v);
+                    
                     Color pixel_color = ray_color(r, world, light_dir);
                     
-                    // Konwersja wektora kolorów zmiennoprzecinkowych na 8-bitowy format RGBA używany przez bibliotekę
                     auto ir = static_cast<std::uint8_t>(255.999 * pixel_color.x());
                     auto ig = static_cast<std::uint8_t>(255.999 * pixel_color.y());
                     auto ib = static_cast<std::uint8_t>(255.999 * pixel_color.z());
@@ -98,19 +109,14 @@ int main() {
                 }
             }
             
-            // Transfer wyrenderowanego obrazu z RAM (sf::Image) do VRAM (sf::Texture) i podpięcie pod obiekt rysujący
+            // Transfer wyrenderowanego obrazu z RAM (sf::Image) do VRAM (sf::Texture) 
             (void)texture.loadFromImage(render_image);
-            sprite.setTexture(texture);
-            
-            // Zapis wygenerowanej klatki na dysk. Rzutowanie (void) ignoruje ostrzeżenie kompilatora [[nodiscard]] o ewentualnym błędzie zapisu.
-            (void)render_image.saveToFile("output.png");
-            
-            // Resetowanie flagi, aby uniknąć zbędnych obliczeń w kolejnej klatce pętli zdarzeń
+            sprite.setTexture(texture, true);
             needs_redraw = false;
             std::cerr << "\rReady.                " << std::endl;
         }
 
-        // Wyczyszczenie okna (Double Buffering), narysowanie zaktualizowanej tekstury i wyświetlenie jej na ekranie
+        // Podwójne buforowanie: wyczyść -> narysuj nową teksturę -> wyświetl
         window.clear();
         window.draw(sprite);
         window.display();
