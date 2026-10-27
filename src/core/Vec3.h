@@ -23,13 +23,22 @@ public:
     double length_squared() const { return e[0]*e[0] + e[1]*e[1] + e[2]*e[2]; }
 };
 
-// Funckja iloczynu skalarnego, która pozwala obliczyć kąt padania światła względem powierzchni, co determinuje jasność oświetlanego punktu 
+// Funkcja iloczynu skalarnego, która pozwala obliczyć kąt padania światła względem powierzchni, co determinuje jasność oświetlanego punktu 
 inline double dot(const Vec3& u, const Vec3& v) {
     return u.e[0]*v.e[0] + u.e[1]*v.e[1] + u.e[2]*v.e[2];
 }
 
 inline Vec3 unit_vector(Vec3 v) {
     return v * (1.0 / v.length());
+}
+
+// Funkcja iloczynu wektorowego (Cross Product).
+// Zwraca wektor 3D, który jest prostopadły jednocześnie do wektorów wejściowych u i v. 
+// Fundamentalne równanie do obliczenia lokalnej przestrzeni (przód/prawo/góra) dla wirtualnej kamery "look-at".
+inline Vec3 cross(const Vec3& u, const Vec3& v) {
+    return Vec3(u.e[1] * v.e[2] - u.e[2] * v.e[1],
+                u.e[2] * v.e[0] - u.e[0] * v.e[2],
+                u.e[0] * v.e[1] - u.e[1] * v.e[0]);
 }
 
 using Point3 = Vec3;
