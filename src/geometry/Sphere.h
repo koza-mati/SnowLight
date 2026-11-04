@@ -1,41 +1,49 @@
 #pragma once
-#include "Hittable.h"
-
-// Implementuje równania kuli i rozwiązuje układ rónań z prostą zdefiniowańa przez promień
+#include "../core/Hittable.h"
+#include "../core/Vec3.h"
+#include <memory>
+#include <cmath>
 
 class Sphere : public Hittable {
 public:
-    Sphere(Point3 cen, double r) : center(cen), radius(r) {}
+    Sphere() {}
+    
+    // Konstruktor sfery wymaga teraz wskaźnika na konkretny materiał
+    Sphere(Point3 cen, double r, std::shared_ptr<Material> m) 
+        : center(cen), radius(r), mat_ptr(m) {};
 
-    virtual bool hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const override {
-        Vec3 oc = r.origin() - center;
-        double a = r.direction().length_squared();
-        double half_b = dot(oc, r.direction());
-        double c = oc.length_squared() - radius*radius;
-        // Obliczenie delty. Wartość ujemna -> brak kolizji z obiektem
-        double discriminant = half_b*half_b - a*c;
-
-        if (discriminant < 0) return false;
-        double sqrtd = std::sqrt(discriminant);
-
-        // Znajdź najbliższe przecięcie w akceptowalnym zakresie
-        double root = (-half_b - sqrtd) / a;
-        if (root < t_min || t_max < root) {
-            root = (-half_b + sqrtd) / a;
-            if (root < t_min || t_max < root)
-                return false;
-        }
-
-        rec.t = root;
-        // Zapisuje współrzędne fizycznego punktu, w którym promień uderzył w powierzchnię kuli na potrzeby dalszych obliczeń cieniowania
-        rec.p = r.at(rec.t);
-        Vec3 outward_normal = (rec.p - center) * (1.0 / radius);
-        rec.set_face_normal(r, outward_normal);
-
-        return true;
-    }
+    virtual bool hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const override;
 
 private:
     Point3 center;
     double radius;
+    std::shared_ptr<Material> mat_ptr; // Przechowuje materiał sfery
 };
+
+bool Sphere::hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const {
+    Vec3 oc = r.origin() - center;
+    auto a = r.direction().length_squared();
+    auto half_b = dot(oc, r.direction());
+    auto c = oc.length_squared() - radius*radius;
+    auto discriminant = half_b*half_b - a*c;
+
+    if (discriminant < 0) return false;
+    auto sqrtd = std::sqrt(discriminant);
+
+    auto root = (-half_b - sqrtd) / a;
+    if (root < t_min || root > t_max) {
+        root = (-half_b + sqrtd) / a;
+        if (root < t_min || root > t_max)
+            return false;
+    }
+
+    rec.t = root;
+    rec.p = r.at(rec.t);
+    Vec3 outward_normal = (rec.p - center) * (1.0 / radius);
+    rec.set_face_normal(r, outward_normal);
+    
+    // Kluczowe: Przekazanie materiału do obiektu przechowującego informacje o trafieniu
+    rec.mat_ptr = mat_ptr;
+
+    return true;
+}
