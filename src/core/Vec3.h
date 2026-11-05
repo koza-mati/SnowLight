@@ -51,8 +51,12 @@ inline Vec3 cross(const Vec3& u, const Vec3& v) {
 }
 
 inline double random_double() {
-    static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-    static std::mt19937 generator;
+    // Słowo kluczowe 'thread_local' gwarantuje, że każdy rdzeń CPU dostanie własną kopię zmiennych.
+    static thread_local std::uniform_real_distribution<double> distribution(0.0, 1.0);
+    
+    // Dodatkowo używamy std::random_device, aby każdy rdzeń wystartował z innym ziarnem losowości.
+    static thread_local std::mt19937 generator(std::random_device{}());
+    
     return distribution(generator);
 }
 
@@ -70,6 +74,11 @@ inline Vec3 random_in_unit_sphere() {
 
 inline Vec3 random_unit_vector() {
     return unit_vector(random_in_unit_sphere());
+}
+
+// Oblicza wektor odbicia światła od gładkiej powierzchni (np. lustra/metalu)
+inline Vec3 reflect(const Vec3& v, const Vec3& n) {
+    return v - n * dot(v, n) * 2;
 }
 
 using Point3 = Vec3;
