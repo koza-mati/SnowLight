@@ -9,6 +9,7 @@ file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h")
 
 add_executable(SnowLight ${SOURCES})
 
-# SFML 3 wymaga komponentów pisanych wielką literą
 find_package(SFML 3 COMPONENTS Graphics Window System REQUIRED)
-target_link_libraries(SnowLight PRIVATE SFML::Graphics SFML::Window SFML::System)
+find_package(OpenMP REQUIRED)
+
+target_link_libraries(SnowLight PRIVATE SFML::Graphics SFML::Window SFML::System OpenMP::OpenMP_CXX)
