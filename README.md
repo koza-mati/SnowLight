@@ -1,108 +1,170 @@
 # SnowLight ❄️🔦
 
-Autorski, pisany od zera w C++17 silnik renderujący oparty na śledzeniu promieni (Ray Tracing). Ostatecznym celem projektu jest wygenerowanie realistycznej sceny 3D przedstawiającej latarnię morską zamkniętą w mikrostrukturze płatka śniegu, uwzględniając złożoną refrakcję lodu i wolumetrykę.
+## Autorski silnik renderujący napisany od podstaw w C++17, oparty na technice śledzenia promieni (Ray Tracing).
 
-Projekt realizowany w ramach przedmiotu na kierunku Informatyczne Systemy Automatyki (Wroclaw University of Science and Technology).
-**Autorzy:** Jakub Włodarski, Mateusz Kozik.
+Ostatecznym celem projektu jest wygenerowanie realistycznej sceny 3D przedstawiającej latarnię morską zamkniętą w mikrostrukturze płatka śniegu, z uwzględnieniem złożonych zjawisk refrakcji światła w lodzie.
 
-## 📅 Harmonogram i Status Projektu
+**Autorzy** : Mateusz Kozik.
 
-- **M1: Kamera i przecięcia** – Inicjalizacja wektorów, promieni, obiektów polimorficznych, kamery, oprogramowanie GUI (SFML) i zapis do PNG.
+# 📅 Harmonogram i status projektu
+### *Etap Zakres prac	Status*
+* **M1** -	Kamera i przecięcia	✅ Zrealizowano 
 
-- **M2: Oświetlenie lokalne (Phong)** – Model oświetlenia, cienie twarde (shadow rays), obsługa podstawowych materiałów.
+* **M2** -	Oświetlenie, materiały i optymalizacja	✅ Zrealizowano 
 
-- **M3: Modele OBJ i drzewo BVH** – Wczytywanie własnej geometrii oraz implementacja akceleracji Bounding Volume Hierarchy.
+* **M3** -	Modele **OBJ** i drzewo **BVH**	⏳ W planach 
 
-- **M4: Rekurencja: lód i refrakcja** – Prawo Snella, zjawisko całkowitego wewnętrznego odbicia, równania Fresnela.
+* **M4** -	Rekurencja: lód i refrakcja	⏳ W planach 
 
-- **M5: Wolumetryka i render** – Ray Marching (mgła, ośrodki uczestniczące) oraz kompozycja finalnej sceny.
+* **M5** -	Wolumetryka i finalny render	⏳ W planach 
 
-## 🚀 Zrealizowano w Etapie M1 (Obecny Status)
+### **Szczegóły etapów**
+* **M1**: Kamera i przecięcia (Zrealizowano) – Inicjalizacja wektorów, promieni, obiektów polimorficznych, kamery, oprogramowanie **GUI** (**SFML**) i zapis obrazu do **PNG**.
 
-W ramach pierwszego kamienia milowego wdrożono podstawy silnika:
+* **M2**: Oświetlenie, materiały i optymalizacja (Zrealizowano) – Obsługa materiałów rozproszonych i metalicznych, wykorzystanie twierdzenia cosinusów do obliczania kątów padania światła, wielowątkowość OpenMP oraz Progressive Rendering (bufor akumulacji).
 
-1. Rdzeń matematyczny przestrzeni 3D (`Vec3`, `Ray`) oraz operacje na wektorach (iloczyn skalarny i wektorowy).
-2. Abstrakcję geometrii (`Hittable`, `HitRecord`) pozwalającą na polimorficzne liczenie przecięć promieni.
-3. System analitycznego rozwiązywania równań przecięć dla sfer (`Sphere`).
-4. Kamerę orbitalną (system Look-at), bazującą na matematyce układu sferycznego (`Camera`), umożliwiającą orbitowanie i skalowanie widoku względem celu sceny.
-5. Silnik generacji obrazu z cieniowaniem typu diffuse (współczynnik natężenia bazujący na iloczynie skalarnym `dot()`).
-6. Integrację biblioteki graficznej SFML: podgląd obrazu na żywo (RenderWindow) oraz obsługę płynnego wieloosiowego wejścia od użytkownika.
+* **M3**: Modele **OBJ** i drzewo **BVH** (W planach) – Wczytywanie własnej geometrii oraz implementacja akceleracji Bounding Volume Hierarchy.
 
-## 📁 Architektura katalogów
+* **M4**: Rekurencja: lód i refrakcja (W planach) – Prawo Snella, zjawisko całkowitego wewnętrznego odbicia oraz materiały dielektryczne.
 
-```text
-├── src/
-│   ├── core/      # Operacje matematyczne i podstawowe promienie (Vec3.h, Ray.h)
-│   ├── geometry/  # Bryły oraz interfejs detekcji kolizji (Hittable.h, Sphere.h)
-│   ├── render/    # Wirtualny obserwator, układ "look-at" (Camera.h)
-│   └── main.cpp   # Główna pętla renderująca, silnik wejścia i obsługa okna
-├── CMakeLists.txt # Plik konfiguracyjny systemu budowania
-├── README.md
+* **M5**: Wolumetryka i render (W planach) – Ostateczne złożenie sceny z latarnią morską i płatkiem śniegu.
+
+# 🚀 Zrealizowane w etapie M2
+
+### **1. Fundament matematyczny i fizyka światła **
+
+Zaimplementowano operacje wektorowe, w tym iloczyn skalarny dot(), uwzględniające relacje kątowe oraz twierdzenie cosinusów wykorzystywane przy wyznaczaniu oświetlenia powierzchni.
+
+### **2. System materiałów**
+Wdrożono polimorficzną obsługę materiałów, obejmującą: 
+Materiał rozproszony (matowy). Materiał metaliczny (Metal) z kontrolą chropowatości (fuzz). 
+
+ ### **3. Wielowątkowość i wydajność**
+Zastosowano paralelizację obliczeń za pomocą OpenMP. 
+Wprowadzono również bezpieczne dla wątków generatory liczb losowych: cpp thread_local std::mt19937 \
+Pozwala to na niezależne generowanie liczb losowych przez poszczególne wątki.
+
+### **4. Bufor akumulacji (Progressive Rendering)**
+Wdrożono mechanizm Progressive Rendering, obejmujący: 
+- Dynamiczne skalowanie rozdzielczości. Uśrednianie kolejnych klatek. 
+- Bufor akumulacji wyników renderowania. 
+- Płynną eksplorację sceny podczas ruchu kamery. 
+
+### **5. Stabilizacja kamery**
+Poprawiono logikę sterowania orbitalnego, zabezpieczając system przed:
+ - Występowaniem wektora zerowego.
+ - Błędami numerycznymi NaN. 
+ - Przemieszczaniem kamery pod powierzchnię podłoża. 
+
+# 📁 Architektura katalogów 
+ 
+SnowLight/ \
+├── src/ \
+│   ├── core/    &emsp;&emsp;   # Operacje matematyczne i generatory losowe\
+│   │   ├── Vec3.h \
+│   │   └── Ray.h \
+│   │\
+│   ├── geometry/  &emsp;&emsp;# Bryły i interfejs detekcji kolizji \
+│   │   ├── Hittable.h \
+│   │   └── Sphere.h \
+│   │ \
+│   ├── material/    &emsp;&emsp;  # Definicje materiałów i odbić światła \
+│   │   ├── Material.h \
+│   │   ├── Lambertian.h\
+│   │   └── Metal.h\
+│   │ \
+│   ├── render/     &emsp;&emsp;   # Kamera i bufor akumulacji \
+│   │   └── Camera.h \
+│   │ \
+│   └── main.cpp  &emsp;&emsp;    # Główna pętla renderująca, \
+│                 &emsp;&emsp; &emsp;&emsp; &emsp;&emsp; &emsp;&emsp;    # OpenMP i obsługa okna \
+│ \
+├── CMakeLists.txt  &emsp; # Konfiguracja systemu budowania\
+├── README.md \
 └── .gitignore
-```
 
-## ⚙️ Wymagania systemowe i zależności
+# ⚙️ Wymagania systemowe i zależności
 
-Projekt korzysta z systemu budowania **CMake** i jest dostosowany do środowiska **MSYS2 (MinGW64)** na systemach Windows.
-Do skompilowania projektu z interfejsem graficznym wymagane są:
+ Projekt wykorzystuje system budowania CMake i jest dostosowany do środowiska **MSYS2** (MinGW64) na systemach Windows.
+### Do skompilowania projektu wymagane są:
+- Kompilator C++	**GCC** obsługujący standard C++17
+- CMake	Minimum 3.10
+- Ninja	Zalecany system budowania
+- OpenMP	Obsługa wielowątkowości
+- **SFML**	Wersja 2.5 lub nowsza
 
-- Kompilator wspierający standard **C++17** (np. GCC)
-- **CMake** (min. wersja 3.10)
-- System budowania **Ninja** (rekomendowany)
-- Biblioteka **SFML 2.5+** (do obsługi okna, sterowania i wyświetlania wyrenderowanej ramki)
 
-Instalacja paczek w terminalu MSYS2:
+## **Instalacja MSYS2**
 
+Uruchom terminal **MSYS2** MinGW64 i wykonaj polecenie:
 ```bash
 pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-sfml
 ```
 
-## 🔨 Kompilacja i Budowanie (MSYS2 MinGW-w64)
 
-Kompilację najwygodniej przeprowadzić z poziomu terminala zintegrowanego w Visual Studio Code lub natywnej konsoli MSYS2.
+# 🔨 Kompilacja i budowanie
 
-1. Utwórz i wejdź do katalogu budowania:
-   ```bash
-   mkdir build
-   cd build
-   ```
+Projekt należy kompilować w środowisku **MSYS2** MinGW-w64.
 
-2. Wygeneruj pliki konfiguracyjne za pomocą CMake, wskazując Ninja jako generator:
-   ```bash
-   cmake -G "Ninja" ..
-   ```
+### Utworzenie katalogu budowania
 
-3. Skompiluj projekt:
-   ```bash
-   ninja
-   ```
+```bash 
+mkdir build cd build
+```
+### Konfiguracja projektu za pomocą CMake
 
-## 🖥️ Uruchamianie i Instrukcja Obsługi
-
-Aby uruchomić silnik, w konsoli (będąc w katalogu `build`) wpisz:
 ```bash
+ cmake -G *Ninja* ..
+```
+### Kompilacja
+
+```bash
+ ninja
+ ```
+
+Po poprawnej kompilacji plik wykonywalny powinien znajdować się w katalogu **./build**.
+
+# 🖥️ Uruchamianie i instrukcja obsługi
+
+**1. Aby uruchomić silnik, będąc w katalogu build, wpisz:**
+```bash 
 ./SnowLight.exe
 ```
 
-**Zasada Działania:**
-1. Po uruchomieniu, program rozpoczyna renderowanie początkowej klatki i otwiera okno systemowe wyświetlające scenę z domyślnego punktu.
-2. Interfejs jest zoptymalizowany: silnik przelicza obraz **tylko** wtedy, kiedy ruszasz kamerą.
-3. **Nawigacja Orbitacyjna:**
-   * W / S – obrót kamery w osi pionowej (elewacja).
-   * A / D – obrót kamery w osi poziomej (azymut, krążenie wokół celu).
-   * Q / E – oddalanie (zoom out) i przybliżanie (zoom in) do celu sceny.
-4. Aby zamknąć program, po prostu kliknij symbol `[X]` w prawym górnym rogu okna.
+**2. Po uruchomieniu program:**
+ 1. Inicjalizuje silnik renderujący.
+ 1. Rozpoczyna renderowanie początkowej klatki. 
+ 1. Otwiera okno systemowe wyświetlające scenę z domyślnego punktu obserwacji.
+ 1. Silnik wykorzystuje bufor akumulacji oraz dynamicznie przelicza obraz podczas ruchu kamery i w tle, zapewniając płynniejszą eksplorację sceny.
 
-## 📝 Historia Zmian (Commity Etapu M1)
+# 🎮 Nawigacja orbitalna
 
-Historia rewizji dokumentująca wprowadzanie kluczowych funkcjonalności:
+### 1. Sterowanie kamerą odbywa się za pomocą klawiatury:
+- **W / S**	- Obrót kamery w osi pionowej / zoom
+- **A / D**	- Obrót kamery w osi poziomej (azymut)
+- **Q / E** -	Regulacja elewacji i odległości
 
-```bash
-git commit -m "feat(math): dodanie iloczynu wektorowego do wektorów 3D" -m "Dodanie funkcji cross() w Vec3.h obliczającej iloczyn wektorowy. Funkcja ta jest kluczowa przy wyliczaniu wektorów prostopadłych na potrzeby m.in. budowy bazy ortonormalnej kamery."
+Sterowanie zostało zabezpieczone przed występowaniem wektora zerowego oraz przemieszczaniem kamery pod powierzchnię gruntu.
 
-git commit -m "feat(camera): implementacja kamery orbitalnej typu look-at" -m "Zastąpienie płaskiej translacji nowym systemem opartym na współrzędnych sferycznych. Dodanie metod orbit() oraz zoom(). Kamera automatycznie przelicza swój lokalny układ współrzędnych (przód/góra/prawo), by stale patrzeć w zdefiniowany punkt sceny, posiadając przy tym bezpiecznik (gimbal lock prevention) dla osi Y."
+###  2. Zamykanie programu
 
-git commit -m "feat(input): płynne i ciągłe sterowanie kamerą" -m "Przeniesienie odczytu stanów klawiatury poza pętlę zdarzeń (pollEvent) na rzecz sprawdzania stanów klawiszy w czasie rzeczywistym (sf::Keyboard::isKeyPressed). Pozwala to na nieprzerwany, wieloosiowy ruch kamery i reaguje poprawnie na przytrzymanie klawisza. Powiązano logikę z nowymi systemami kamery: zoom (Q,E) oraz orbit (WASD)."
+Aby zamknąć aplikację, kliknij symbol [X] w prawym górnym rogu okna.
 
-git commit -m "docs: zaktualizowanie projektu o system kamery orbitalnej" -m "Zaktualizowano README.md oraz prezentację LaTeX o informacje na temat zaimplementowania iloczynu wektorowego, kamery orbitalnej, systemu look-at oraz stałego próbkowania wejścia dla płynniejszego działania aplikacji."
-```
+# 🎯 Cel końcowy projektu
+
+Docelowym rezultatem prac nad SnowLight jest stworzenie realistycznego renderu 3D przedstawiającego latarnię morską zamkniętą wewnątrz struktury płatka śniegu.
+
+**Projekt zakłada wykorzystanie zaawansowanych technik renderowania, takich jak:**
+
+- Ray Tracing. 
+- Rekurencyjne śledzenie promieni. 
+- Refrakcja światła zgodna z prawem Snella. 
+- Całkowite wewnętrzne odbicie. 
+- Materiały dielektryczne. 
+- Akceleracja obliczeń za pomocą **BVH**. 
+- Renderowanie wolumetryczne.
+
+SnowLight ma na celu połączenie fizycznie poprawnej symulacji światła z wydajnym, autorskim silnikiem renderującym napisanym w C++17.
+ 
+ #
+ *Projekt realizowany w ramach przedmiotu na kierunku Informatyczne Systemy Automatyki – Politechnika Wrocławska.*
