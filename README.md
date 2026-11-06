@@ -31,7 +31,7 @@ Ostatecznym celem projektu jest wygenerowanie realistycznej sceny 3D przedstawia
 
 # 🚀 Zrealizowane w etapie M2
 
-### **1. Fundament matematyczny i fizyka światła **
+###  1. Fundament matematyczny i fizyka światła 
 
 Zaimplementowano operacje wektorowe, w tym iloczyn skalarny dot(), uwzględniające relacje kątowe oraz twierdzenie cosinusów wykorzystywane przy wyznaczaniu oświetlenia powierzchni.
 
