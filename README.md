@@ -8,15 +8,15 @@ Ostatecznym celem projektu jest wygenerowanie realistycznej sceny 3D przedstawia
 
 # 📅 Harmonogram i status projektu
 ### *Etap Zakres prac	Status*
-* **M1** -	Kamera i przecięcia	✅ Zrealizowano 
+* **M1** -	Kamera i przecięcia [	✅ Zrealizowano ]
 
-* **M2** -	Oświetlenie, materiały i optymalizacja	✅ Zrealizowano 
+* **M2** -	Oświetlenie, materiały i optymalizacja	[ ✅ Zrealizowano ]
 
-* **M3** -	Modele **OBJ** i drzewo **BVH**	⏳ W planach 
+* **M3** -	Modele **OBJ** i drzewo **BVH**	[⏳ W planach ]
 
-* **M4** -	Rekurencja: lód i refrakcja	⏳ W planach 
+* **M4** -	Rekurencja: lód i refrakcja	[⏳ W planach ]
 
-* **M5** -	Wolumetryka i finalny render	⏳ W planach 
+* **M5** -	Wolumetryka i finalny render	[⏳ W planach ]
 
 ### **Szczegóły etapów**
 * **M1**: Kamera i przecięcia (Zrealizowano) – Inicjalizacja wektorów, promieni, obiektów polimorficznych, kamery, oprogramowanie **GUI** (**SFML**) i zapis obrazu do **PNG**.
