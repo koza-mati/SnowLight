@@ -13,3 +13,4 @@ find_package(SFML 3 COMPONENTS Graphics Window System REQUIRED)
 find_package(OpenMP REQUIRED)
 
 target_link_libraries(SnowLight PRIVATE SFML::Graphics SFML::Window SFML::System OpenMP::OpenMP_CXX)
+target_compile_options(SnowLight PRIVATE -O3 -march=native)
