@@ -24,7 +24,7 @@ private:
     Color albedo;
 };
 
-// NOWOŚĆ: Materiał metaliczny (kierunkowe odbijanie światła)
+// Materiał metaliczny (kierunkowe odbijanie światła)
 class Metal : public Material {
 public:
     // Parametr fuzz (0.0 to idealne lustro, 1.0 to maksymalne zmatowienie)
@@ -44,4 +44,42 @@ public:
 private:
     Color albedo;
     double fuzz;
+};
+
+// Materiał dielektryczny (lód, szkło - refrakcja i efekt Fresnela)
+class Dielectric : public Material {
+public:
+    double ir; // Współczynnik załamania światła (np. 1.31 dla lodu, 1.5 dla szkła)
+
+    Dielectric(double index_of_refraction) : ir(index_of_refraction) {}
+
+    bool scatter(const Ray& r_in, const HitRecord& rec, Color& attenuation, Ray& scattered) const override {
+        attenuation = Color(1.0, 1.0, 1.0);
+        double refraction_ratio = rec.front_face ? (1.0 / ir) : ir;
+
+        Vec3 unit_direction = unit_vector(r_in.direction());
+        double cos_theta = std::fmin(dot(-unit_direction, rec.normal), 1.0);
+        double sin_theta = std::sqrt(1.0 - cos_theta * cos_theta);
+
+        bool cannot_refract = refraction_ratio * sin_theta > 1.0;
+        Vec3 direction;
+
+        // Sprawdzenie całkowitego wewnętrznego odbicia lub odbicia Fresnela (Schlick)
+        if (cannot_refract || reflectance(cos_theta, refraction_ratio) > random_double()) {
+            direction = reflect(unit_direction, rec.normal);
+        } else {
+            direction = refract(unit_direction, rec.normal, refraction_ratio);
+        }
+
+        scattered = Ray(rec.p, direction);
+        return true;
+    }
+
+private:
+    // Aproksymacja Schlicka dla współczynnika odbicia Fresnela
+    static double reflectance(double cosine, double ref_idx) {
+        auto r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
+        r0 = r0 * r0;
+        return r0 + (1.0 - r0) * std::pow((1.0 - cosine), 5);
+    }
 };
