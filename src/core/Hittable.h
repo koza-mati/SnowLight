@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "../core/Ray.h"
+#include "../core/AABB.h"
 
 // Zapowiedź (forward declaration) klasy Material.
 // Pozwala użyć wskaźnika na ten typ bez wczytywania całego pliku Material.h
@@ -24,4 +25,5 @@ class Hittable {
 public:
     virtual ~Hittable() = default;
     virtual bool hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const = 0;
+    virtual bool bounding_box(AABB& output_box) const = 0;
 };
