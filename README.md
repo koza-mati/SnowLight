@@ -1,7 +1,3 @@
-Oto zaktualizowana, kompletna wersja pliku **`**README**.md`**. Zaktualizowano w niej harmonogram projektu na pełne ukończenie (wszystkie etupy od M1 do M5 jako zrealizowane), odświeżono strukturę katalogów oraz dodano sekcje opisujące zaawansowane funkcje zrealizowane w toku prac: drzewo **BVH**, modele **OBJ**, optykę dielektryczną z prawem Snella, proceduralne tekstury lodu (bump mapping i tłumienie Beer-Lamberta), analityczną wolumetrię oraz obrotowy reflektor Fresnela.
-
----
-
 # SnowLight ❄️🔦
 
 ## Autorski silnik renderujący napisany od podstaw w C++17, oparty na technice śledzenia promieni (Ray Tracing).
