@@ -81,5 +81,13 @@ inline Vec3 reflect(const Vec3& v, const Vec3& n) {
     return v - n * dot(v, n) * 2;
 }
 
+// Oblicza wektor załamany na granicy dwóch ośrodków (Prawo Snella)
+inline Vec3 refract(const Vec3& uv, const Vec3& n, double etai_over_etat) {
+    auto cos_theta = std::fmin(dot(-uv, n), 1.0);
+    Vec3 r_out_perp = (uv + n * cos_theta) * etai_over_etat;
+    Vec3 r_out_parallel = n * (-std::sqrt(std::fabs(1.0 - r_out_perp.length_squared())));
+    return r_out_perp + r_out_parallel;
+}
+
 using Point3 = Vec3;
 using Color = Vec3;
