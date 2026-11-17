@@ -1,106 +1,132 @@
+Oto zaktualizowana, kompletna wersja pliku **`**README**.md`**. Zaktualizowano w niej harmonogram projektu na pełne ukończenie (wszystkie etupy od M1 do M5 jako zrealizowane), odświeżono strukturę katalogów oraz dodano sekcje opisujące zaawansowane funkcje zrealizowane w toku prac: drzewo **BVH**, modele **OBJ**, optykę dielektryczną z prawem Snella, proceduralne tekstury lodu (bump mapping i tłumienie Beer-Lamberta), analityczną wolumetrię oraz obrotowy reflektor Fresnela.
+
+---
+
 # SnowLight ❄️🔦
 
 ## Autorski silnik renderujący napisany od podstaw w C++17, oparty na technice śledzenia promieni (Ray Tracing).
 
-Ostatecznym celem projektu jest wygenerowanie realistycznej sceny 3D przedstawiającej latarnię morską zamkniętą w mikrostrukturze płatka śniegu, z uwzględnieniem złożonych zjawisk refrakcji światła w lodzie.
+Realistyczna scena 3D przedstawiająca latarnię morską zamkniętą w mikrostrukturze trójwymiarowego, dendrytycznego płatka śniegu, osadzona na zamarzniętej tafli jeziora pod nocnym niebem z zorzą polarną i oświetlona obrotowym reflektorem z uwzględnieniem zaawansowanej optyki i wolumetryki.
 
-**Autorzy** : Mateusz Kozik.
+**Autor** : Mateusz Kozik.
 
 # 📅 Harmonogram i status projektu
-### *Etap Zakres prac	Status*
-* **M1** -	Kamera i przecięcia [	✅ Zrealizowano ]
 
-* **M2** -	Oświetlenie, materiały i optymalizacja	[ ✅ Zrealizowano ]
+### *Etap | Zakres prac | Status*
 
-* **M3** -	Modele **OBJ** i drzewo **BVH**	[⏳ W planach ]
-
-* **M4** -	Rekurencja: lód i refrakcja	[⏳ W planach ]
-
-* **M5** -	Wolumetryka i finalny render	[⏳ W planach ]
+- **M1** - Kamera i przecięcia [ ✅ Zrealizowano ]
+- **M2** - Oświetlenie, materiały i optymalizacja [ ✅ Zrealizowano ]
+- **M3** - Modele **OBJ** i drzewo **BVH** [ ✅ Zrealizowano ]
+- **M4** - Rekurencja: lód, optyka i dyspersja [ ✅ Zrealizowano ]
+- **M5** - Wolumetryka, animacja reflektora i finalny render [ ✅ Zrealizowano ]
 
 ### **Szczegóły etapów**
-* **M1**: Kamera i przecięcia (Zrealizowano) – Inicjalizacja wektorów, promieni, obiektów polimorficznych, kamery, oprogramowanie **GUI** (**SFML**) i zapis obrazu do **PNG**.
 
-* **M2**: Oświetlenie, materiały i optymalizacja (Zrealizowano) – Obsługa materiałów rozproszonych i metalicznych, wykorzystanie twierdzenia cosinusów do obliczania kątów padania światła, wielowątkowość OpenMP oraz Progressive Rendering (bufor akumulacji).
+- **M1**: Kamera i przecięcia (Zrealizowano) – Inicjalizacja wektorów, promieni, obiektów polimorficznych, kamery, oprogramowanie **GUI** (**SFML**) i zapis obrazu.
+- **M2**: Oświetlenie, materiały i optymalizacja (Zrealizowano) – Obsługa materiałów rozproszonych i metalicznych, oświetlenie bezpośrednie (**NEE**), wielowątkowość OpenMP oraz Progressive Rendering (bufor akumulacji).
+- **M3**: Modele **OBJ** i drzewo **BVH** (Zrealizowano) – Wczytywanie własnej geometrii proceduralnej i plików `.**OBJ**` oraz implementacja akceleracji przestrzennej Bounding Volume Hierarchy.
+- **M4**: Rekurencja: lód i refrakcja (Zrealizowano) – Prawo Snella, zjawisko całkowitego wewnętrznego odbicia (**TIR**), materiały dielektryczne, prawo tłumienia Beer-Lamberta oraz proceduralny bump mapping.
+- **M5**: Wolumetryka i animacja (Zrealizowano) – Analityczne rozpraszanie objętościowe, obrotowy reflektor Fresnela w laternie, interaktywne sterowanie i stabilizacja bufora klatek.
 
-* **M3**: Modele **OBJ** i drzewo **BVH** (W planach) – Wczytywanie własnej geometrii oraz implementacja akceleracji Bounding Volume Hierarchy.
+# 🚀 Kluczowe cechy i zrealizowane funkcjonalności
 
-* **M4**: Rekurencja: lód i refrakcja (W planach) – Prawo Snella, zjawisko całkowitego wewnętrznego odbicia oraz materiały dielektryczne.
+### 1. Fizyka światła i optyka dielektryczna
 
-* **M5**: Wolumetryka i render (W planach) – Ostateczne złożenie sceny z latarnią morską i płatkiem śniegu.
+- **Równanie Fresnela i prawo Snella:** Symulacja przejścia światła przez kryształ lodu ($ior = 1.31$) z uwzględnieniem odbić lustrzanych i załamań.
+- **Proceduralne tekstury lodu:** Bump mapping oparty na szumie 3D (`noise3d`) generujący mikrozarysowania oraz prawo Bouguera–Lamberta–Beera modelujące tłumienie i błękitne zabarwienie w objętości bryły.
+- **Rozbłyski pryzmatyczne i mikro-chropowatość:** Iskrzenie faset kryształu pod wpływem padającego światła.
 
-# 🚀 Zrealizowane w etapie M2
+### 2. Zaawansowane oświetlenie i wolumetria
 
-###  1. Fundament matematyczny i fizyka światła 
+- **Obrotowy reflektor Fresnela:** Dwukierunkowa wiązka świetlna z laterny latarni morskiej omiatająca ramiona płatka śniegu i taflę jeziora.
+- **Analityczna wolumetria (*God Rays*):** Symulacja rozpraszania światła w powietrzu i wnętrzu kryształu z uwzględnieniem cieni rzucanych przez szprosy laterny.
+- **Oświetlenie bezpośrednie (**NEE**):** Efektywne próbkowanie świateł oraz oświetlenie nocnym księżycem i arktycznym niebem z gwiazdami i zorzą.
 
-Zaimplementowano operacje wektorowe, w tym iloczyn skalarny dot(), uwzględniające relacje kątowe oraz twierdzenie cosinusów wykorzystywane przy wyznaczaniu oświetlenia powierzchni.
+### 3. Geometria i akceleracja (BVH & OBJ)
 
-### **2. System materiałów**
-Wdrożono polimorficzną obsługę materiałów, obejmującą: 
-Materiał rozproszony (matowy). Materiał metaliczny (Metal) z kontrolą chropowatości (fuzz). 
+- **Proceduralny generator siatek (`MeshGenerator`):** Automatyczne budowanie skomplikowanej geometrii 3D: centralnej komory heksagonalnej, sześciu głównych ramion dendrytycznych z piętrami odnóg oraz modelu latarni morskiej.
+- **Drzewo przyspieszające **BVH**:** Drzwi hierarchiczne ograniczające złożoność testów przecięć promieni z $O(N)$ do $O(\log N)$.
 
- ### **3. Wielowątkowość i wydajność**
-Zastosowano paralelizację obliczeń za pomocą OpenMP. 
-Wprowadzono również bezpieczne dla wątków generatory liczb losowych: cpp thread_local std::mt19937 \
-Pozwala to na niezależne generowanie liczb losowych przez poszczególne wątki.
+### 4. Wydajność i Progressive Rendering
 
-### **4. Bufor akumulacji (Progressive Rendering)**
-Wdrożono mechanizm Progressive Rendering, obejmujący: 
-- Dynamiczne skalowanie rozdzielczości. Uśrednianie kolejnych klatek. 
-- Bufor akumulacji wyników renderowania. 
-- Płynną eksplorację sceny podczas ruchu kamery. 
+- **Paralelizacja OpenMP:** Wykorzystanie wszystkich rdzeni procesora przy wsparciu bezpiecznych dla wątków generatorów `thread_local std::mt19937`.
+- **Interlacing 2x2 i bufor akumulacji:** Dynamiczna optymalizacja trybu interaktywnego podczas ruchu kamery oraz wygładzanie czasowe (**EMA**) dla płynnej animacji obrotu światła.
 
-### **5. Stabilizacja kamery**
-Poprawiono logikę sterowania orbitalnego, zabezpieczając system przed:
- - Występowaniem wektora zerowego.
- - Błędami numerycznymi NaN. 
- - Przemieszczaniem kamery pod powierzchnię podłoża. 
+# 📁 Architektura katalogów
 
-# 📁 Architektura katalogów 
- 
-SnowLight/ \
-├── src/ \
-│   ├── core/    &emsp;&emsp;   # Operacje matematyczne i generatory losowe\
-│   │   ├── Vec3.h \
-│   │   └── Ray.h \
-│   │\
-│   ├── geometry/  &emsp;&emsp;# Bryły i interfejs detekcji kolizji \
-│   │   ├── Hittable.h \
-│   │   └── Sphere.h \
-│   │ \
-│   ├── material/    &emsp;&emsp;  # Definicje materiałów i odbić światła \
-│   │   ├── Material.h \
-│   │   ├── Lambertian.h\
-│   │   └── Metal.h\
-│   │ \
-│   ├── render/     &emsp;&emsp;   # Kamera i bufor akumulacji \
-│   │   └── Camera.h \
-│   │ \
-│   └── main.cpp  &emsp;&emsp;    # Główna pętla renderująca, \
-│                 &emsp;&emsp; &emsp;&emsp; &emsp;&emsp; &emsp;&emsp;    # OpenMP i obsługa okna \
-│ \
-├── CMakeLists.txt  &emsp; # Konfiguracja systemu budowania\
-├── README.md \
+SnowLight/
+
+├── src/
+
+│   ├── core/         # Macierze, wektory, promienie, **AABB** i **BVH**
+
+│   │   ├── Vec3.h
+
+│   │   ├── Ray.h
+
+│   │   ├── **AABB**.h
+
+│   │   ├── Hittable.h
+
+│   │   ├── HittableList.h
+
+│   │   └── **BVH**.h
+
+│   │
+
+│   ├── geometry/    # Bryły, parser **OBJ** i generator siatek
+
+│   │   ├── Sphere.h
+
+│   │   ├── Triangle.h
+
+│   │   ├── ObjLoader.h
+
+│   │   └── MeshGenerator.h
+
+│   │
+
+│   ├── materials/        # Modele materiałów (lód, metal, szkło, światło)
+
+│   │   └── Material.h
+
+│   │
+
+│   ├── render/          # Kamera i bufor akumulacji
+
+│   │   └── Camera.h
+
+│   │
+
+│   └── main.cpp        # Główna pętla renderująca, wolumetria i OpenMP
+
+│
+
+├── CMakeLists.txt    # Konfiguracja systemu budowania
+
+├── **README**.md
+
 └── .gitignore
 
 # ⚙️ Wymagania systemowe i zależności
 
- Projekt wykorzystuje system budowania CMake i jest dostosowany do środowiska **MSYS2** (MinGW64) na systemach Windows.
+Projekt wykorzystuje system budowania CMake i jest dostosowany do środowiska **MSYS2** (MinGW64) na systemach Windows.
+
 ### Do skompilowania projektu wymagane są:
+
 - Kompilator C++	**GCC** obsługujący standard C++17
 - CMake	Minimum 3.10
 - Ninja	Zalecany system budowania
 - OpenMP	Obsługa wielowątkowości
 - **SFML**	Wersja 2.5 lub nowsza
 
-
 ## **Instalacja MSYS2**
 
 Uruchom terminal **MSYS2** MinGW64 i wykonaj polecenie:
-```bash
-pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-sfml
-```
 
+```bash pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-sfml
+
+```
 
 # 🔨 Kompilacja i budowanie
 
@@ -108,63 +134,57 @@ Projekt należy kompilować w środowisku **MSYS2** MinGW-w64.
 
 ### Utworzenie katalogu budowania
 
-```bash 
-mkdir build cd build
+```bash mkdir build && cd build
+
 ```
+
 ### Konfiguracja projektu za pomocą CMake
 
-```bash
- cmake -G *Ninja* ..
+```bash cmake -G *Ninja* ..
+
 ```
+
 ### Kompilacja
 
-```bash
- ninja
- ```
+```bash ninja
 
-Po poprawnej kompilacji plik wykonywalny powinien znajdować się w katalogu **./build**.
+```
+
+Po poprawnej kompilacji plik wykonywalny `SnowLight.exe` znajdzie się w katalogu bieżącym.
 
 # 🖥️ Uruchamianie i instrukcja obsługi
 
-**1. Aby uruchomić silnik, będąc w katalogu build, wpisz:**
-```bash 
-./SnowLight.exe
+**1. Aby uruchomić silnik:**
+
+```bash ./SnowLight.exe
+
 ```
 
-**2. Po uruchomieniu program:**
- 1. Inicjalizuje silnik renderujący.
- 1. Rozpoczyna renderowanie początkowej klatki. 
- 1. Otwiera okno systemowe wyświetlające scenę z domyślnego punktu obserwacji.
- 1. Silnik wykorzystuje bufor akumulacji oraz dynamicznie przelicza obraz podczas ruchu kamery i w tle, zapewniając płynniejszą eksplorację sceny.
+**2. Działanie programu:**
 
-# 🎮 Nawigacja orbitalna
+- Automatycznie generuje i zapisuje modele `.obj` do folderu `models/`.
+- Inicjalizuje struktury **BVH** i uruchamia okno systemowe **SFML**.
+- Renderuje interaktywną scenę w czasie rzeczywistym z obsługą bufora akumulacji.
 
-### 1. Sterowanie kamerą odbywa się za pomocą klawiatury:
-- **W / S**	- Obrót kamery w osi pionowej / zoom
-- **A / D**	- Obrót kamery w osi poziomej (azymut)
-- **Q / E** -	Regulacja elewacji i odległości
+# 🎮 Sterowanie i nawigacja
 
-Sterowanie zostało zabezpieczone przed występowaniem wektora zerowego oraz przemieszczaniem kamery pod powierzchnię gruntu.
+### 1. Klawisze ruchu kamery (Orbitalna):
 
-###  2. Zamykanie programu
+- **W / S** – Zoom / zbliżanie i oddalanie
+- **A / D** – Obrót w osi poziomej (azymut)
+- **Q / E** – Regulacja elewacji kamery
 
-Aby zamknąć aplikację, kliknij symbol [X] w prawym górnym rogu okna.
+### 2. Sterowanie oświetleniem:
 
-# 🎯 Cel końcowy projektu
+- **Spacja** – Wstrzymanie / wznowienie automatycznego obrotu reflektora latarni.
+- **Strzałki Lewo / Prawo** – Ręczny obrót osi wiązki światła latarni.
 
-Docelowym rezultatem prac nad SnowLight jest stworzenie realistycznego renderu 3D przedstawiającego latarnię morską zamkniętą wewnątrz struktury płatka śniegu.
+### 3. Zamykanie programu:
 
-**Projekt zakłada wykorzystanie zaawansowanych technik renderowania, takich jak:**
+Aby zamknąć aplikację, kliknij symbol `[X]` w prawym górnym rogu okna.
 
-- Ray Tracing. 
-- Rekurencyjne śledzenie promieni. 
-- Refrakcja światła zgodna z prawem Snella. 
-- Całkowite wewnętrzne odbicie. 
-- Materiały dielektryczne. 
-- Akceleracja obliczeń za pomocą **BVH**. 
-- Renderowanie wolumetryczne.
+# 🎯 Podsumowanie
 
-SnowLight ma na celu połączenie fizycznie poprawnej symulacji światła z wydajnym, autorskim silnikiem renderującym napisanym w C++17.
- 
- #
- *Projekt realizowany w ramach przedmiotu na kierunku Informatyczne Systemy Automatyki – Politechnika Wrocławska.*
+Projekt **SnowLight** stanowi w pełni zrealizowane połączenie fizycznie poprawnej symulacji optycznej (ray tracing, refrakcja, wolumetria) z wydajnym, wielowątkowym silnikiem napisanym od podstaw w C++17.
+
+*Projekt realizowany w ramach przedmiotu na kierunku Informatyczne Systemy Automatyki – Politechnika Wrocławska.*
